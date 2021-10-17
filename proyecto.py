@@ -47,34 +47,33 @@ class Game:
             if sprite.rect.collidepoint(event_pos):
                 if self.coins_v == 0:
                     sprite.flip()
-                    self.v = sprite
+                    self.v = sprite # Store the sprite in self.v
                     self.coins_v += 1
-                elif self.coins_v == 1:
-                    sprite.flip()
-                    self._update_screen()
-                    time.sleep(0.5)
+                else:
                     self._check_two_coins(sprite)
-                print(self.errors, self.pairs, self.v, self.coins_v)
 
     def _check_two_coins(self, sprite):
         """ Check if the two coins are equal """
-        if self.v != sprite and self.v.name == sprite.name:
-            self.pairs += 1
-            self.coins_v = 0
-            # Change the group
-            self.coins.remove(sprite)
-            self.coins.remove(self.v)
-            self.complete.add(sprite)
-            self.complete.add(self.v)
-            if self.pairs == 8:
-                print("Ganaste")
-                pygame.quit()
-                sys.exit()
-        elif self.v != sprite:
-            self.v.flip()
+        if self.v != sprite:
             sprite.flip()
-            self.errors += 1
-            self.coins_v = 0
+            self._update_screen()
+            time.sleep(0.5)
+            if self.v.name == sprite.name:
+                self.coins_v = 0
+                # Change the group
+                self.coins.remove(sprite)
+                self.coins.remove(self.v)
+                self.complete.add(sprite)
+                self.complete.add(self.v)
+                if len(self.complete) == 16:
+                    print("Ganaste")
+                    pygame.quit()
+                    sys.exit()
+            else:
+                self.v.flip()
+                sprite.flip()
+                self.errors += 1
+                self.coins_v = 0
 
     def _update_screen(self):
         """ Update the screen """

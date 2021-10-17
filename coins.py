@@ -15,7 +15,7 @@ class Coin(Sprite):
         self.name = image
 
         self.image_front = pygame.transform.scale(pygame.image.load(f"Assets/{image}.jpg"), (self.settings.coin_len, self.settings.coin_len))
-        self.image_back = pygame.transform.scale(pygame.image.load("Assets/apple.jpg"), (self.settings.coin_len, self.settings.coin_len))
+        self.image_back = pygame.transform.scale(pygame.image.load("Assets/back.jpg"), (self.settings.coin_len, self.settings.coin_len))
 
         self.image = self.image_back
         self.rect = self.image.get_rect()
