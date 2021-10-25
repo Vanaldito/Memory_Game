@@ -87,7 +87,7 @@ class Game:
         self.clock.tick(self.settings.FPS)
 
     def _create_board(self):
-        """ Create a initial board """
+        """ Create an initial board """
         carts = 2 * ["apple", "duck", "bone", "muffin", "pear", "star", "crab", "trumpet"]
         random.shuffle(carts)
         for index in range(len(carts)):
