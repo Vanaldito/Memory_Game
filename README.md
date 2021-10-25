@@ -1,6 +1,6 @@
 # Memory Game
 
-A simple memory game make with python and pygame
+A simple memory game made with python and pygame
 
 # Screenshots
 
