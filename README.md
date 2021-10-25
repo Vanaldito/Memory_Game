@@ -1,4 +1,4 @@
-# Memory_Game
+# Memory Game
 
 A simple memory game make with python and pygame
 
