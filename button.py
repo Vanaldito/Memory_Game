@@ -19,4 +19,3 @@ class Button():
     def update(self):
         """ Draw the text on the screen """
         self.screen.blit(self.text_str, self.rect)
-

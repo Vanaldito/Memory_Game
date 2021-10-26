@@ -7,6 +7,7 @@ from pygame.locals import *
 
 from settings import Settings
 from coins import Coin
+from button import Button
 
 class Game:
     """ A class to manage the game """
@@ -17,16 +18,18 @@ class Game:
 
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        pygame.display.set_caption("Memory Game")
         self.clock = pygame.time.Clock()
         self.coins = pygame.sprite.Group()
         self.complete = pygame.sprite.Group() # For the sprites completes
+        self.button = Button(self)
         self.coins_v = 0
         self.errors = 0
         self.pairs = 0
+        self.game_active = False
 
     def run(self):
         """ Init the game loop """
-        self._create_board()
         while True:
             self._check_events()
             self._update_screen()
@@ -43,14 +46,18 @@ class Game:
     def _check_mouse_button(self):
         """ Respond to mouse events """
         event_pos = pygame.mouse.get_pos()
-        for sprite in self.coins.copy():
-            if sprite.rect.collidepoint(event_pos):
-                if self.coins_v == 0:
-                    sprite.flip()
-                    self.v = sprite # Store the sprite in self.v
-                    self.coins_v += 1
-                else:
-                    self._check_two_coins(sprite)
+        if not self.game_active:
+            if self.button.rect.collidepoint(event_pos):
+                self._play_mouse_button()
+        else:
+            for sprite in self.coins.copy():
+                if sprite.rect.collidepoint(event_pos):
+                    if self.coins_v == 0:
+                        sprite.flip()
+                        self.v = sprite # Store the sprite in self.v
+                        self.coins_v += 1
+                    else:
+                        self._check_two_coins(sprite)
 
     def _check_two_coins(self, sprite):
         """ Check if the two coins are equal """
@@ -66,9 +73,7 @@ class Game:
                 self.complete.add(sprite)
                 self.complete.add(self.v)
                 if len(self.complete) == 16:
-                    print("Ganaste")
-                    pygame.quit()
-                    sys.exit()
+                    self.game_active = False
             else:
                 self.v.flip()
                 sprite.flip()
@@ -82,16 +87,25 @@ class Game:
         self.coins.draw(self.screen)
         self.complete.draw(self.screen)
 
+        if not self.game_active:
+            self.button.update()
+
         pygame.display.update()
 
         self.clock.tick(self.settings.FPS)
 
     def _create_board(self):
-        """ Create an initial board """
+        """ Create a initial board """
         carts = 2 * ["apple", "duck", "bone", "muffin", "pear", "star", "crab", "trumpet"]
         random.shuffle(carts)
         for index in range(len(carts)):
             self.coins.add(Coin(self, carts[index], index%4, index//4))
+
+    def _play_mouse_button(self):
+        """ Respond when press mouse button """
+        self.complete.empty()
+        self._create_board()
+        self.game_active = True
 
 if __name__=="__main__":
     ai_game = Game()
