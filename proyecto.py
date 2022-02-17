@@ -19,6 +19,7 @@ class Game:
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Memory Game")
+
         self.clock = pygame.time.Clock()
         self.coins = pygame.sprite.Group()
         self.complete = pygame.sprite.Group() # For the sprites completes
@@ -46,39 +47,48 @@ class Game:
     def _check_mouse_button(self):
         """ Respond to mouse events """
         event_pos = pygame.mouse.get_pos()
-        if not self.game_active:
-            if self.button.rect.collidepoint(event_pos):
-                self._play_mouse_button()
-        else:
-            for sprite in self.coins.copy():
-                if sprite.rect.collidepoint(event_pos):
-                    if self.coins_v == 0:
-                        sprite.flip()
-                        self.v = sprite # Store the sprite in self.v
-                        self.coins_v += 1
-                    else:
-                        self._check_two_coins(sprite)
+
+        if (not self.game_active and 
+                self.button.rect.collidepoint(event_pos)):
+            return self._play_mouse_button()
+
+        for sprite in self.coins.copy():
+            if not sprite.rect.collidepoint(event_pos):
+                continue
+
+            if self.coins_v == 1:
+                self._check_two_coins(sprite)
+                continue
+
+            sprite.flip()
+            self.v = sprite # Store the sprite in self.v
+            self.coins_v += 1
 
     def _check_two_coins(self, sprite):
         """ Check if the two coins are equal """
-        if self.v != sprite:
+        if self.v == sprite:
+            return None
+
+        sprite.flip()
+        self._update_screen()
+        time.sleep(0.5)
+
+        if self.v.name != sprite.name:
+            self.v.flip()
             sprite.flip()
-            self._update_screen()
-            time.sleep(0.5)
-            if self.v.name == sprite.name:
-                self.coins_v = 0
-                # Change the group
-                self.coins.remove(sprite)
-                self.coins.remove(self.v)
-                self.complete.add(sprite)
-                self.complete.add(self.v)
-                if len(self.complete) == 16:
-                    self.game_active = False
-            else:
-                self.v.flip()
-                sprite.flip()
-                self.errors += 1
-                self.coins_v = 0
+            self.errors += 1
+            self.coins_v = 0
+            return None;
+
+        self.coins_v = 0
+        # Change the group
+        self.coins.remove(sprite)
+        self.coins.remove(self.v)
+        self.complete.add(sprite)
+        self.complete.add(self.v)
+
+        if len(self.complete) == 16:
+            self.game_active = False
 
     def _update_screen(self):
         """ Update the screen """
